@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>[LINE FRIENDS SQUARE] 2026 TOWN HALL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --lemon: #e3ff00; 
+            --border: rgba(255, 255, 255, 0.12);
+            --border-hover: rgba(255, 255, 255, 0.35);
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html { 
+            scroll-snap-type: y mandatory; 
+            scroll-behavior: smooth;
+        }
+        
+        body { 
+            background: var(--black); 
+            color: var(--white); 
+            font-family: 'Noto Sans KR', sans-serif; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        /* 커스텀 커서 */
+        #cur { position: fixed; width: 8px; height: 8px; background: var(--white); border-radius: 50%; pointer-events: none; z-index: 10000; mix-blend-mode: difference; transition: transform 0.2s; }
+        #ring { position: fixed; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* 네비게이션 */
+        nav { 
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000; 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 50px; height: 72px; 
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.35); backdrop-filter: blur(20px);
+        }
+        .n-logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--white); }
+        .n-mark { padding: 4px 10px; border: 1.2px solid var(--white); display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: 0.05em; }
+        .n-text { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; }
+        .n-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.5); display: flex; gap: 24px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SLIDE 01: HERO INTRO */
+        .hero-video-wrap { position: absolute; inset: 0; z-index: 0; background: #000; }
+        .v-main { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+        .v-overlay { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%); z-index: 1; }
+
+        .hero-content { position: relative; z-index: 10; padding: 0 60px; max-width: 1400px; margin: auto; width: 100%; }
+        .h-tag { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 400; letter-spacing: 0.5em; text-transform: uppercase; margin-bottom: 24px; color: rgba(255,255,255,0.7); }
+        .h-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(40px, 6vw, 90px); line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase; }
+        .h-title span.outline { -webkit-text-stroke: 1px var(--white); color: transparent; }
+        .h-sub { font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 18px; color: rgba(255,255,255,0.8); margin-top: 28px; letter-spacing: 0.15em; }
+        
+        .s-indicator { position: absolute; bottom: 40px; right: 60px; display: flex; align-items: center; gap: 20px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: rgba(255,255,255,0.5); }
+        .s-line { width: 40px; height: 1px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
+        .s-line::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--white); animation: loading 2s infinite; }
+        @keyframes loading { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
+
+        /* SLIDE 02: STRATEGY AGENDA */
+        .agenda-slide { background: var(--black); }
+        .agenda-header { padding: 90px 60px 30px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border); }
+        .ah-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 48px; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+        .ah-title span { color: var(--lemon); opacity: 0.95; } 
+        .ah-meta { text-align: right; font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+        .agenda-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            flex: 1;
+            width: 100%;
+        }
+        
+        .ag-item {
+            position: relative;
+            padding: 44px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            overflow: hidden;
+            z-index: 1;
+        }
+        .ag-item:nth-child(4n) { border-right: none; }
+        .ag-item:nth-child(n+5) { border-bottom: none; }
+
+        .ag-item::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(227, 255, 0, 0.06), transparent 80%);
+            opacity: 0; transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .ag-item:hover {
+            background: rgba(255, 255, 255, 0.025);
+            z-index: 5;
+            border-right-color: var(--border-hover);
+            border-bottom-color: var(--border-hover);
+        }
+        .ag-item:hover::before { opacity: 1; }
+        
+        .ag-num { 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 52px; 
+            line-height: 1; color: var(--lemon); 
+            opacity: 0.15; 
+            transition: var(--transition);
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .ag-item:hover .ag-num { color: var(--lemon); opacity: 1; transform: scale(1.08); text-shadow: 0 0 20px rgba(227, 255, 0, 0.4); }
+
+        .ag-content { margin-top: auto; position: relative; z-index: 2; }
+        .ag-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 14px; display: block; }
+        .ag-title { 
+            font-family: 'Montserrat', sans-serif; font-weight: 700; 
+            font-size: 28px; line-height: 1.25; letter-spacing: -0.01em; 
+            transition: var(--transition); color: rgba(255, 255, 255, 0.9); 
+            text-transform: uppercase;
+        }
+        .ag-item:hover .ag-title { color: var(--white); transform: translateY(-4px); }
+        
+        .ag-desc { font-size: 14px; color: rgba(255,255,255,0.45); font-weight: 300; margin-top: 16px; line-height: 1.6; transition: color 0.4s; }
+        .ag-item:hover .ag-desc { color: rgba(255,255,255,0.7); }
+
+        /* SLIDE 03: HIGHLIGHTS (Awards & Draw) */
+        .highlight-slide { 
+            background: #000; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr;
+        }
+        .hi-card {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+            text-decoration: none;
+            color: inherit;
+            border-right: 1px solid var(--border);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .hi-card:last-child { border-right: none; }
+        
+        .hi-bg {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at center, rgba(227, 255, 0, 0.03) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.8s;
+            z-index: 0;
+        }
+        .hi-card:hover .hi-bg { opacity: 1; }
+        .hi-card:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .hi-tag { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--lemon); margin-bottom: 24px; position: relative; z-index: 1; }
+        .hi-title { 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; 
+            font-size: clamp(32px, 4vw, 64px); line-height: 1; 
+            letter-spacing: -0.03em; text-transform: uppercase; 
+            position: relative; z-index: 1;
+            transition: var(--transition);
+        }
+        .hi-card:hover .hi-title { transform: scale(1.05); }
+        .hi-desc { 
+            font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.5); 
+            margin-top: 32px; line-height: 1.6; max-width: 440px;
+            position: relative; z-index: 1;
+            transition: var(--transition);
+        }
+        .hi-card:hover .hi-desc { color: var(--white); }
+
+        .hi-action {
+            margin-top: 48px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--white);
+            position: relative; z-index: 1;
+        }
+        .hi-circle {
+            width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--white);
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
+        }
+        .hi-card:hover .hi-circle { background: var(--lemon); border-color: var(--lemon); color: var(--black); transform: rotate(45deg); }
+
+        footer { 
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 64px; border-top: 1px solid var(--border); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 60px;
+            background: var(--black);
+            z-index: 10;
+        }
+        .f-copy { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 0.1em; }
+        .f-links { display: flex; gap: 28px; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; }
+        .f-links a { text-decoration: none; color: rgba(255,255,255,0.3); transition: 0.3s; }
+        .f-links a:hover { color: var(--white); }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); }
+        .active .reveal { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 1280px) {
+            .agenda-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+            .ah-title { font-size: 36px; }
+            .highlight-slide { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+            .hi-card { padding: 40px 60px; }
+            .hi-card:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="ring"></div>
+
+<nav>
+    <a href="#" class="n-logo">
+        <div class="n-mark">LFSQ</div>
+        <div class="n-text">LINE FRIENDS SQUARE</div>
+    </a>
+    <div class="n-meta">
+        <span>TOWN HALL 2026</span>
+        <span>CONFIDENTIAL REPORT</span>
+    </div>
+</nav>
+
+<!-- SLIDE 1: INTRO -->
+<section class="intro-slide active">
+    <div class="hero-video-wrap">
+        <video class="v-main" autoplay muted loop playsinline>
+            <source src="회사영상_260108_1080x1080 모바일.mp4" type="video/mp4">
+            <source src="https://cdn.shopify.com/videos/c/o/v/e145cac11f93437b8d955511e8a5f7cc.mp4" type="video/mp4">
+        </video>
+        <div class="v-overlay"></div>
+    </div>
+    
+    <div class="hero-content">
+        <div class="h-tag reveal">LINE FRIENDS SQUARE</div>
+        <h1 class="h-title reveal" style="transition-delay: 0.1s;">
+            2026 <br>
+            <span class="outline">TOWN HALL</span>
+        </h1>
+        <p class="h-sub reveal" style="transition-delay: 0.2s;">라인프렌즈 스퀘어의 새로운 챕터</p>
+    </div>
+
+    <div class="s-indicator">
+        SCROLL TO EXPLORE
+        <div class="s-line"></div>
+        01 / 03
+    </div>
+</section>
+
+<!-- SLIDE 2: AGENDA (8개 아젠다 4x2 그리드) -->
+<section class="agenda-slide" id="agenda">
+    <div class="agenda-header reveal">
+        <h2 class="ah-title">2026<span> STRATEGY</span></h2>
+        <div class="ah-meta">
+            ASSETIZATION · AI TRANSFORMATION<br>
+            SUSTAINABILITY · O4O APP
+        </div>
+    </div>
+
+    <div class="agenda-grid">
+        <a class="ag-item reveal" href="#" data-link="perf">
+            <span class="ag-num">01</span>
+            <div class="ag-content">
+                <span class="ag-tag">Overview</span>
+                <h4 class="ag-title">FY25<br>Review</h4>
+                <p class="ag-desc">라인프렌즈 스퀘어 성과 분석</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="strategy" style="transition-delay: 0.05s;">
+            <span class="ag-num">02</span>
+            <div class="ag-content">
+                <span class="ag-tag">Main Strategy</span>
+                <h4 class="ag-title">2026<br>Roadmap</h4>
+                <p class="ag-desc">수익 생태계 구축 전략</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="b2b" style="transition-delay: 0.1s;">
+            <span class="ag-num">03</span>
+            <div class="ag-content">
+                <span class="ag-tag">B2B</span>
+                <h4 class="ag-title">Profit<br>Pipeline</h4>
+                <p class="ag-desc">K-POP 유통 및 B2B 확장</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="offline" style="transition-delay: 0.15s;">
+            <span class="ag-num">04</span>
+            <div class="ag-content">
+                <span class="ag-tag">Offline</span>
+                <h4 class="ag-title">Landmark<br>Experience</h4>
+                <p class="ag-desc">모델 스토어 및 이익구조 개편</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="online" style="transition-delay: 0.2s;">
+            <span class="ag-num">05</span>
+            <div class="ag-content">
+                <span class="ag-tag">Online</span>
+                <h4 class="ag-title">O4O<br>Integrated</h4>
+                <p class="ag-desc">팬덤 Lock-in 플랫폼 구축</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="md" style="transition-delay: 0.25s;">
+            <span class="ag-num">06</span>
+            <div class="ag-content">
+                <span class="ag-tag">MD Assets</span>
+                <h4 class="ag-title">IP<br>Assetization</h4>
+                <p class="ag-desc">지속가능한 IP자산화 전략</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="Marketing" style="transition-delay: 0.3s;">
+            <span class="ag-num">07</span>
+            <div class="ag-content">
+                <span class="ag-tag">Marketing</span>
+                <h4 class="ag-title">Media<br>Influence</h4>
+                <p class="ag-desc">팬덤의 일상에 닿아, 성장의 '흐름'을 설계합니다.</p>
+            </div>
+        </a>
+        <a class="ag-item reveal" href="#" data-link="ax" style="transition-delay: 0.35s;">
+            <span class="ag-num">08</span>
+            <div class="ag-content">
+                <span class="ag-tag">AX Innovation</span>
+                <h4 class="ag-title">AX<br>One Voice</h4>
+                <p class="ag-desc">일하는 방식의 AI 혁신</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="s-indicator">
+        02 / 03
+    </div>
+</section>
+
+<!-- SLIDE 3: HIGHLIGHTS (Special Events) -->
+<section class="highlight-slide">
+    <!-- Highlight 01: Awards -->
+    <a href="#" class="hi-card reveal" data-link="awards">
+        <div class="hi-bg"></div>
+        <span class="hi-tag">Awards Ceremony</span>
+        <h3 class="hi-title">LINE FRIENDS SQUARE<br>of the Year</h3>
+        <p class="hi-desc">2025년을 빛낸 올해의 스퀘어인을 소개합니다.</p>
+        <div class="hi-action">
+            Reveal Winners <div class="hi-circle">→</div>
+        </div>
+    </a>
+
+    <!-- Highlight 02: Lucky Draw -->
+    <a href="#" class="hi-card reveal" data-link="draw" style="transition-delay: 0.1s;">
+        <div class="hi-bg"></div>
+        <span class="hi-tag">Special Surprise</span>
+        <h3 class="hi-title">TOWN HALL<br>LUCKY DRAW</h3>
+        <p class="hi-desc">행운은 누구에게? 입구에서 나눠드린 나의 행운 번호를 지금부터 잘 확인해주세요!</p>
+        <div class="hi-action">
+            Try Your Luck <div class="hi-circle">→</div>
+        </div>
+    </a>
+
+    <footer>
+        <div class="f-copy">© 2026 LINE FRIENDS SQUARE. ALL RIGHTS RESERVED.</div>
+        <div class="f-links">
+            <a href="#">Deck</a>
+            <a href="#">Portal</a>
+            <a href="#">Global</a>
+        </div>
+    </footer>
+</section>
+
+<script>
+    /* 커서 인터랙션 */
+    const cur = document.getElementById('cur'), ring = document.getElementById('ring');
+    let cx = 0, cy = 0, rx = 0, ry = 0;
+    
+    document.addEventListener('mousemove', e => {
+        cx = e.clientX; cy = e.clientY;
+        cur.style.left = cx + 'px'; cur.style.top = cy + 'px';
+        
+        const target = e.target.closest('.ag-item, .hi-card');
+        if (target) {
+            const rect = target.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            target.style.setProperty('--x', x + '%');
+            target.style.setProperty('--y', y + '%');
+        }
+    });
+
+    function animR() {
+        rx += (cx - rx) * 0.15; ry += (cy - ry) * 0.15;
+        ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+        requestAnimationFrame(animR);
+    }
+    animR();
+
+    document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cur.style.transform = 'scale(6)';
+            cur.style.background = 'rgba(255,255,255,0.1)';
+            ring.style.transform = 'scale(1.2)';
+            ring.style.borderColor = 'rgba(255,255,255,0.6)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cur.style.transform = 'scale(1)';
+            cur.style.background = 'white';
+            ring.style.transform = 'scale(1)';
+            ring.style.borderColor = 'rgba(255,255,255,0.3)';
+        });
+    });
+
+    /* 섹션 스크롤 옵저버 */
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('active');
+                // 페이지 번호 업데이트 로직 (간단 구현)
+                const sections = document.querySelectorAll('section');
+                const index = Array.from(sections).indexOf(e.target) + 1;
+                document.querySelectorAll('.s-indicator').forEach(el => {
+                    if (el.innerText.includes('/')) {
+                        el.innerHTML = `SCROLL TO EXPLORE <div class="s-line"></div> 0${index} / 03`;
+                    } else {
+                        el.innerText = `0${index} / 03`;
+                    }
+                });
+            } else {
+                e.target.classList.remove('active');
+            }
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('section').forEach(el => io.observe(el));
+
+    /* 링크 매핑 */
+    const linkMap = {
+        'perf': 'https://docs.google.com/presentation/d/1G1wXtQ_rQbJGpOvfcqr-_UJVXKYBP6vM2zRRDSOb-SE/edit?usp=drive_link',
+        'strategy': 'https://drive.google.com/file/d/1fi4mBkR_1GrRu18en4tj3dmB3pY0IOdL/view?usp=drive_link',
+        'b2b': '#',
+        'offline': 'https://docs.google.com/presentation/d/1w_aZ2EHS6jR3tpcC29kAEMMVd0ZM7iabH_oiojeIfcE/edit?usp=drive_link',
+        'online': '#',
+        'md': '#',
+        'Marketing': 'https://kimboo82.github.io/twonhallmkt/',
+        'ax': 'https://ai-tf-git-main-jihoabba.vercel.app/reports/2026-04-13-ideas-consolidation_v2.html',
+        'awards': '#',
+        'draw': '#'
+    };
+
+    document.querySelectorAll('[data-link]').forEach(el => {
+        el.addEventListener('click', e => {
+            e.preventDefault();
+            const key = el.dataset.link;
+            const url = linkMap[key];
+            
+            if(url && url !== '#') {
+                window.open(url, '_blank');
+            } else {
+                const toast = document.createElement('div');
+                toast.textContent = '🔒 곧 공개될 예정입니다. 조금만 기다려주세요!';
+                toast.style.cssText = `
+                    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+                    background: rgba(255,255,255,0.95); color: #000; padding: 12px 24px;
+                    border-radius: 4px; font-size: 11px; font-weight: 700; z-index: 10001;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeInUp 0.4s ease;
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.5s';
+                    setTimeout(() => toast.remove(), 500);
+                }, 2000);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
